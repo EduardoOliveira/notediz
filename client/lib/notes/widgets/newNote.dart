@@ -12,7 +12,7 @@ class NewNoteCard extends StatefulWidget {
 
 class _NewNoteCardState extends State<NewNoteCard> {
   String _noteContent = '';
-  String _noteKind = '';
+  final String _noteKind = '';
   late final ContextModel contextModel;
 
   @override
