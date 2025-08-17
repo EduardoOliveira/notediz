@@ -6,6 +6,7 @@ toolchain go1.24.0
 
 require (
 	github.com/google/uuid v1.6.0
+	github.com/kuzudb/go-kuzu v0.11.1
 	github.com/pressly/goose/v3 v3.24.3
 	modernc.org/sqlite v1.38.2
 )
@@ -17,6 +18,7 @@ require (
 	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/sethvargo/go-retry v0.3.0 // indirect
+	github.com/shopspring/decimal v1.4.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20250620022241-b7579e27df2b // indirect
 	golang.org/x/sync v0.15.0 // indirect
