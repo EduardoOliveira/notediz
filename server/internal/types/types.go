@@ -25,7 +25,7 @@ var (
 type Bookmark struct {
 	ID          string
 	NoteID      string
-	Url         string
+	URL         string
 	Title       string
 	Description string
 	CreatedAt   time.Time
@@ -34,10 +34,10 @@ type Bookmark struct {
 
 func (b Bookmark) Validate() error {
 	var err error
-	if b.Url == "" {
+	if b.URL == "" {
 		slog.Error("Empty URL", "bookmark", b)
 		err = errors.Join(err, fmt.Errorf("url cannot be empty"))
-	} else if _, vErr := url.Parse(b.Url); vErr != nil {
+	} else if _, vErr := url.Parse(b.URL); vErr != nil {
 		err = errors.Join(err, fmt.Errorf("error validating url: %v", vErr))
 	}
 	return err
@@ -52,7 +52,7 @@ func BookmarkFromAny(v map[string]any) Bookmark {
 		b.NoteID = noteID
 	}
 	if url, ok := v["url"].(string); ok {
-		b.Url = url
+		b.URL = url
 	}
 	if title, ok := v["title"].(string); ok {
 		b.Title = title
@@ -67,7 +67,7 @@ func BookmarkFromAny(v map[string]any) Bookmark {
 type Audio struct {
 	ID        string
 	NoteID    string
-	Url       string
+	URL       string
 	Title     string
 	Duration  int64
 	CreatedAt time.Time
@@ -97,7 +97,7 @@ type File struct {
 type Image struct {
 	ID        string
 	NoteID    string
-	Url       string
+	URL       string
 	Alt       opt.Optional[string]
 	Width     int64
 	Height    int64
@@ -158,7 +158,7 @@ type Todo struct {
 type Video struct {
 	ID        string
 	NoteID    string
-	Url       string
+	URL       string
 	Title     string
 	Duration  int64
 	CreatedAt time.Time

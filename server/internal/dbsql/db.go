@@ -1,11 +1,11 @@
-package db
+package dbsql
 
 import (
 	"database/sql"
 	"path/filepath"
 	"time"
 
-	"github.com/EduardoOliveira/notediz/internal/db/gen"
+	"github.com/EduardoOliveira/notediz/internal/dbsql/gen"
 	"github.com/google/uuid"
 	_ "modernc.org/sqlite"
 )

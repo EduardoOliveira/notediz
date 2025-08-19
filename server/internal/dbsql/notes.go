@@ -1,10 +1,10 @@
-package db
+package dbsql
 
 import (
 	"context"
 	"log/slog"
 
-	"github.com/EduardoOliveira/notediz/internal/db/gen"
+	"github.com/EduardoOliveira/notediz/internal/dbsql/gen"
 	"github.com/EduardoOliveira/notediz/internal/types"
 )
 
@@ -72,7 +72,7 @@ func (r *Repo) CreateBookmark(ctx context.Context, bookmark types.Bookmark) (typ
 	err = qtx.CreateBookmark(ctx, gen.CreateBookmarkParams{
 		ID:        bookmarkID,
 		NoteID:    noteID,
-		Url:       bookmark.Url,
+		Url:       bookmark.URL,
 		Title:     bookmark.Title,
 		CreatedAt: r.now(),
 		UpdatedAt: r.now(),
@@ -86,5 +86,13 @@ func (r *Repo) CreateBookmark(ctx context.Context, bookmark types.Bookmark) (typ
 		return types.Bookmark{}, err
 	}
 
-	return types.Bookmark(rtn), tx.Commit()
+	return types.Bookmark{
+		ID:          rtn.ID,
+		NoteID:      rtn.NoteID,
+		URL:         rtn.Url,
+		Title:       rtn.Title,
+		Description: rtn.Description,
+		CreatedAt:   rtn.CreatedAt,
+		UpdatedAt:   rtn.UpdatedAt,
+	}, tx.Commit()
 }

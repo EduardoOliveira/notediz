@@ -4,14 +4,16 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/EduardoOliveira/notediz/internal/db"
-	"github.com/EduardoOliveira/notediz/internal/db/migrations"
+	"github.com/EduardoOliveira/notediz/internal/dbkuzu"
 	"github.com/EduardoOliveira/notediz/internal/handler"
 )
 
 func main() {
-	db := db.MustNew(".")
-	migrations.MustMigrate(context.Background(), db.Db)
+	//db := dbsql.MustNew(".")
+	//migrations.MustMigrate(context.Background(), db.Db)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	db := dbkuzu.MustNew(ctx, ".")
 
 	handler := handler.New(db)
 

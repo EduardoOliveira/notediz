@@ -1,18 +1,24 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 
-	"github.com/EduardoOliveira/notediz/internal/db"
+	"github.com/EduardoOliveira/notediz/internal/types"
 )
 
+type Repo interface {
+	CreateBookmark(ctx context.Context, bookmark types.Bookmark) (types.Bookmark, error)
+	CreateText(ctx context.Context, note types.Text) (types.Text, error)
+}
+
 type Handler struct {
-	repo        *db.Repo
+	repo        Repo
 	HTTPHandler http.Handler
 }
 
-func New(repo *db.Repo) *Handler {
+func New(repo Repo) *Handler {
 	h := &Handler{
 		repo: repo,
 	}
