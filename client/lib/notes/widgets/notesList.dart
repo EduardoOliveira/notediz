@@ -1,5 +1,5 @@
 import 'package:client/notes/domain/models/bookmarks.dart';
-import 'package:client/notes/widgets/noteCard.dart';
+import 'package:client/notes/widgets/bookmarkCard.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'newNote.dart';
@@ -24,12 +24,12 @@ class NotesList extends StatelessWidget {
             if (contextModel.notes[index - 1] is Bookmark) {
               // If the note is a bookmark, show it
               final bookmark = contextModel.notes[index - 1] as Bookmark;
-              return NoteCard(note: bookmark);
+              return BookmarkCard(bookmark: bookmark);
             } else {
               // Handle other types of notes if needed
             }
             final note = contextModel.notes[index - 1];
-            return NoteCard(note: note);
+            return BookmarkCard(bookmark: note);
           }
           return Placeholder();
           //return Tile(index: index, extent: (index % 5 + 1) * 100);

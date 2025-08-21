@@ -3,8 +3,6 @@ package types
 import (
 	"errors"
 	"fmt"
-	"log/slog"
-	"net/url"
 	"time"
 
 	"github.com/EduardoOliveira/notediz/internal/lib/opt"
@@ -22,76 +20,41 @@ var (
 	NoteKindTodo     NoteKind = "todo"
 )
 
-type Bookmark struct {
-	ID          string
-	URL         string
-	Title       string
-	Description string
-	Kind        NoteKind
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+func anyToTime(t *time.Time, v any) {
+	switch val := v.(type) {
+	case string:
+		if parsed, err := time.Parse(time.RFC3339, val); err == nil {
+			*t = parsed
+		}
+	case time.Time:
+		*t = val
+	default:
+		*t = time.Time{}
+	}
 }
-
-func (b Bookmark) Validate() error {
-	var err error
-	if b.URL == "" {
-		slog.Error("Empty URL", "bookmark", b)
-		err = errors.Join(err, fmt.Errorf("url cannot be empty"))
-	} else if _, vErr := url.Parse(b.URL); vErr != nil {
-		err = errors.Join(err, fmt.Errorf("error validating url: %v", vErr))
-	}
-	return err
-}
-
-func BookmarkFromAny(v map[string]any) Bookmark {
-	var b Bookmark
-	if id, ok := v["id"].(string); ok {
-		b.ID = id
-	}
-	if url, ok := v["url"].(string); ok {
-		b.URL = url
-	}
-	if title, ok := v["title"].(string); ok {
-		b.Title = title
-	}
-	if description, ok := v["description"].(string); ok {
-		b.Description = description
-	}
-	b.Kind = NoteKindBookmark
-
-	return b
-}
-
-func BookmarkFromFlatTuple(rowMap map[string]any) (Bookmark, error) {
-	b := Bookmark{
-		Kind: NoteKindBookmark,
-	}
-
-	if kind, ok := rowMap["kind"].(string); ok {
-		if kind != string(NoteKindBookmark) {
-			return b, fmt.Errorf("unexpected kind: %s", kind)
+func anyToString(s *string, v any, fallback ...string) {
+	if val, ok := v.(string); ok {
+		*s = val
+	} else {
+		if len(fallback) > 0 {
+			*s = fallback[0]
+		} else {
+			*s = ""
 		}
 	}
-	if id, ok := rowMap["id"].(string); ok {
-		b.ID = id
-	}
-	if url, ok := rowMap["url"].(string); ok {
-		b.URL = url
-	}
-	if title, ok := rowMap["title"].(string); ok {
-		b.Title = title
-	}
-	if description, ok := rowMap["description"].(string); ok {
-		b.Description = description
-	}
-	if createdAt, ok := rowMap["created_at"].(time.Time); ok {
-		b.CreatedAt = createdAt
-	}
-	if updatedAt, ok := rowMap["updated_at"].(time.Time); ok {
-		b.UpdatedAt = updatedAt
-	}
+}
 
-	return b, nil
+func anyToSome[T any](s *T, v any, fallback ...T) {
+	if val, ok := v.(T); ok {
+		*s = val
+	} else {
+		if len(fallback) > 0 {
+			*s = fallback[0]
+		} else {
+			var zero T
+			*s = zero
+		}
+	}
 }
 
 type Audio struct {
@@ -164,14 +127,6 @@ type Tag struct {
 	ID        string
 	Name      string
 	Color     string
-	CreatedAt time.Time
-	UpdatedAt time.Time
-}
-
-type Text struct {
-	ID        string
-	NoteID    string
-	Content   string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
