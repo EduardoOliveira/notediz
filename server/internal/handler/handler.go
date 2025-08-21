@@ -11,6 +11,8 @@ import (
 type Repo interface {
 	CreateBookmark(ctx context.Context, bookmark types.Bookmark) (types.Bookmark, error)
 	CreateText(ctx context.Context, note types.Text) (types.Text, error)
+
+	GetNoteContext(noteID string) ([]any, error)
 }
 
 type Handler struct {
@@ -24,6 +26,7 @@ func New(repo Repo) *Handler {
 	}
 	httpHandler := http.NewServeMux()
 	httpHandler.HandleFunc("POST /api/notes", h.CreateNote)
+	httpHandler.HandleFunc("GET /api/notes", h.GetNoteContext)
 	httpHandler.HandleFunc("POST /api/bookmarks", h.CreateBookmark)
 	h.HTTPHandler = httpHandler
 	return h

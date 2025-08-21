@@ -24,10 +24,10 @@ var (
 
 type Bookmark struct {
 	ID          string
-	NoteID      string
 	URL         string
 	Title       string
 	Description string
+	Kind        NoteKind
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
@@ -48,9 +48,6 @@ func BookmarkFromAny(v map[string]any) Bookmark {
 	if id, ok := v["id"].(string); ok {
 		b.ID = id
 	}
-	if noteID, ok := v["note_id"].(string); ok {
-		b.NoteID = noteID
-	}
 	if url, ok := v["url"].(string); ok {
 		b.URL = url
 	}
@@ -60,8 +57,41 @@ func BookmarkFromAny(v map[string]any) Bookmark {
 	if description, ok := v["description"].(string); ok {
 		b.Description = description
 	}
+	b.Kind = NoteKindBookmark
 
 	return b
+}
+
+func BookmarkFromFlatTuple(rowMap map[string]any) (Bookmark, error) {
+	b := Bookmark{
+		Kind: NoteKindBookmark,
+	}
+
+	if kind, ok := rowMap["kind"].(string); ok {
+		if kind != string(NoteKindBookmark) {
+			return b, fmt.Errorf("unexpected kind: %s", kind)
+		}
+	}
+	if id, ok := rowMap["id"].(string); ok {
+		b.ID = id
+	}
+	if url, ok := rowMap["url"].(string); ok {
+		b.URL = url
+	}
+	if title, ok := rowMap["title"].(string); ok {
+		b.Title = title
+	}
+	if description, ok := rowMap["description"].(string); ok {
+		b.Description = description
+	}
+	if createdAt, ok := rowMap["created_at"].(time.Time); ok {
+		b.CreatedAt = createdAt
+	}
+	if updatedAt, ok := rowMap["updated_at"].(time.Time); ok {
+		b.UpdatedAt = updatedAt
+	}
+
+	return b, nil
 }
 
 type Audio struct {
@@ -119,7 +149,7 @@ func (c CreateNote) Validate() error {
 }
 
 type Note struct {
-	ID        string
+	NoteID    string
 	Kind      NoteKind
 	CreatedAt time.Time
 	UpdatedAt time.Time

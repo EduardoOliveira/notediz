@@ -88,7 +88,6 @@ func (r *Repo) CreateBookmark(ctx context.Context, bookmark types.Bookmark) (typ
 
 	return types.Bookmark{
 		ID:          rtn.ID,
-		NoteID:      rtn.NoteID,
 		URL:         rtn.Url,
 		Title:       rtn.Title,
 		Description: rtn.Description,

@@ -51,7 +51,7 @@ func MustNew(ctx context.Context, basePath string) *Repo {
 func (r *Repo) initSchema() {
 	queries := []string{
 		//TODO: explore kuzu uuid type
-		`CREATE NODE TABLE Bookmark(id STRING, title STRING, url STRING, created_at TIMESTAMP, updated_at TIMESTAMP, PRIMARY KEY (id))`,
+		`CREATE NODE TABLE Bookmark(id STRING, kind STRING, title STRING, url STRING, created_at TIMESTAMP, updated_at TIMESTAMP, PRIMARY KEY (id))`,
 	}
 
 	for _, query := range queries {

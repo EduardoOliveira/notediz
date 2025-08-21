@@ -70,6 +70,7 @@ func (h *Handler) CreateNote(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		bm.Kind = types.NoteKindBookmark
 		bm, err = h.repo.CreateBookmark(r.Context(), bm)
 		if err != nil {
 			h.errorResponse(w, http.StatusInternalServerError, err)
@@ -112,4 +113,16 @@ func (h *Handler) CreateBookmark(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.jsonResponse(w, http.StatusCreated, bookmark)
+}
+
+func (h *Handler) GetNoteContext(w http.ResponseWriter, r *http.Request) {
+	noteID := r.URL.Query().Get("note_id")
+
+	context, err := h.repo.GetNoteContext(noteID)
+	if err != nil {
+		h.errorResponse(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	h.jsonResponse(w, http.StatusOK, context)
 }
