@@ -1,10 +1,10 @@
-import 'package:client/notes/domain/models/bookmarks.dart';
+import 'package:client/notes/domain/models/notes.dart' as notes;
 import 'package:flutter/material.dart';
 
 class TextCard extends StatelessWidget {
-  const TextCard({super.key, required this.bookmark});
+  const TextCard({super.key, required this.text});
 
-  final Bookmark bookmark;
+  final notes.Text text;
 
   @override
   Widget build(BuildContext context) {
@@ -14,9 +14,9 @@ class TextCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(bookmark.url, style: Theme.of(context).textTheme.titleLarge),
+            Text(text.content, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 8.0),
-            Text(bookmark.kind, style: Theme.of(context).textTheme.titleMedium),
+            Text(text.kind, style: Theme.of(context).textTheme.titleMedium),
           ],
         ),
       ),

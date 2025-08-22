@@ -1,7 +1,7 @@
+import 'package:client/notes/domain/models/notes.dart' as notes;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/contextModel.dart';
-import '../domain/models/bookmarks.dart';
 
 class NewNoteCard extends StatefulWidget {
   const NewNoteCard({super.key});
@@ -12,7 +12,6 @@ class NewNoteCard extends StatefulWidget {
 
 class _NewNoteCardState extends State<NewNoteCard> {
   String _noteContent = '';
-  final String _noteKind = '';
   late final ContextModel contextModel;
 
   @override
@@ -23,17 +22,22 @@ class _NewNoteCardState extends State<NewNoteCard> {
 
   void _saveNote() {
     if (_noteContent.startsWith("http")) {
-      final bookmark = Bookmark(
+      final bookmark = notes.Bookmark(
         url: _noteContent,
-        title: _noteKind,
         description: _noteContent,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
       contextModel.addBookmark(bookmark);
+      return;
     }
-    //final note = Note(Content: _noteContent, Kind: _noteKind);
-    //contextModel.addNote(note);
+    contextModel.addNote(
+      notes.Text(
+        content: _noteContent,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+    );
   }
 
   void _noteChanged(String value) {

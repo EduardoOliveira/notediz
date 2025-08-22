@@ -1,4 +1,4 @@
-import 'package:client/notes/domain/models/bookmarks.dart';
+import 'package:client/notes/domain/models/notes.dart' show Bookmark;
 import 'package:flutter/material.dart';
 
 class BookmarkCard extends StatelessWidget {

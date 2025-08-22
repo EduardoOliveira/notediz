@@ -6,6 +6,8 @@ import (
 	"log/slog"
 	"net/url"
 	"time"
+
+	"github.com/EduardoOliveira/notediz/internal/lib/tools"
 )
 
 type Bookmark struct {
@@ -28,69 +30,48 @@ func (b Bookmark) Validate() error {
 	if b.URL == "" {
 		slog.Error("Empty URL", "bookmark", b)
 		err = errors.Join(err, fmt.Errorf("url cannot be empty"))
-	} else if _, vErr := url.Parse(b.URL); vErr != nil {
+	} else if u, vErr := url.Parse(b.URL); vErr != nil {
+		if u.Scheme != "http" && u.Scheme != "https" {
+			err = errors.Join(err, fmt.Errorf("url must have a scheme (http or https)"))
+		}
+		if u.Host == "" {
+			err = errors.Join(err, fmt.Errorf("url must have a host"))
+		}
 		err = errors.Join(err, fmt.Errorf("error validating url: %v", vErr))
 	}
 	return err
 }
 
-func (b *Bookmark) FromAny(v map[string]any) {
-	if id, ok := v["id"].(string); ok {
-		b.ID = id
-	}
-	if url, ok := v["url"].(string); ok {
-		b.URL = url
-	}
-	if title, ok := v["title"].(string); ok {
-		b.Title = title
-	}
-	if description, ok := v["description"].(string); ok {
-		b.Description = description
-	}
-	anyToTime(&b.CreatedAt, v["created_at"])
-	anyToTime(&b.UpdatedAt, v["updated_at"])
-}
+func (b *Bookmark) CreateFromAny(v map[string]any) error {
+	b.FromAny(v)
 
-func BookmarkFromAny(v map[string]any) Bookmark {
-	var b Bookmark
-	anyToSome(&b.ID, v["id"])
-	anyToSome(&b.URL, v["url"])
-	anyToSome(&b.Title, v["title"])
-	anyToSome(&b.Description, v["description"])
-	anyToTime(&b.CreatedAt, v["created_at"])
-	anyToTime(&b.UpdatedAt, v["updated_at"])
+	b.ID = tools.UUID()
+	b.CreatedAt = tools.Now()
+	b.UpdatedAt = tools.Now()
 	b.Kind = NoteKindBookmark
-	return b
+
+	if err := b.Validate(); err != nil {
+		return err
+	}
+	return nil
 }
 
-func BookmarkFromFlatTuple(rowMap map[string]any) (Bookmark, error) {
-	b := Bookmark{
-		Kind: NoteKindBookmark,
-	}
-
-	if kind, ok := rowMap["kind"].(string); ok {
-		if kind != string(NoteKindBookmark) {
-			return b, fmt.Errorf("unexpected kind: %s", kind)
-		}
-	}
-	if id, ok := rowMap["id"].(string); ok {
+func (b *Bookmark) FromAny(v map[string]any) {
+	if id, ok := v["ID"].(string); ok {
 		b.ID = id
 	}
-	if url, ok := rowMap["url"].(string); ok {
+	if url, ok := v["URL"].(string); ok {
 		b.URL = url
 	}
-	if title, ok := rowMap["title"].(string); ok {
+	if title, ok := v["Title"].(string); ok {
 		b.Title = title
 	}
-	if description, ok := rowMap["description"].(string); ok {
+	if description, ok := v["Description"].(string); ok {
 		b.Description = description
 	}
-	if createdAt, ok := rowMap["created_at"].(time.Time); ok {
-		b.CreatedAt = createdAt
+	anyToTime(&b.CreatedAt, v["CreatedAt"])
+	anyToTime(&b.UpdatedAt, v["UpdatedAt"])
+	if kind, ok := v["Kind"].(string); ok {
+		b.Kind = NoteKind(kind)
 	}
-	if updatedAt, ok := rowMap["updated_at"].(time.Time); ok {
-		b.UpdatedAt = updatedAt
-	}
-
-	return b, nil
 }

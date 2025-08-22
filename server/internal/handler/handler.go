@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"log/slog"
 	"net/http"
 
 	"github.com/EduardoOliveira/notediz/internal/types"
@@ -27,12 +28,11 @@ func New(repo Repo) *Handler {
 	httpHandler := http.NewServeMux()
 	httpHandler.HandleFunc("POST /api/notes", h.CreateNote)
 	httpHandler.HandleFunc("GET /api/notes", h.GetNoteContext)
-	httpHandler.HandleFunc("POST /api/bookmarks", h.CreateBookmark)
 	h.HTTPHandler = httpHandler
 	return h
 }
 
-func (_ Handler) jsonResponse(w http.ResponseWriter, status int, data any) {
+func (Handler) jsonResponse(w http.ResponseWriter, status int, data any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	if data != nil {
@@ -42,15 +42,16 @@ func (_ Handler) jsonResponse(w http.ResponseWriter, status int, data any) {
 	}
 }
 
-func (_ Handler) errorResponse(w http.ResponseWriter, status int, err error) {
+func (Handler) errorResponse(w http.ResponseWriter, status int, err error) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
+	slog.Error("Handling error", "error", err)
 	response := map[string]string{"error": err.Error()}
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		http.Error(w, "Failed to encode error response", http.StatusInternalServerError)
 	}
 }
 
-func (_ *Handler) noContentResponse(w http.ResponseWriter, status int) {
+func (Handler) noContentResponse(w http.ResponseWriter, status int) {
 	w.WriteHeader(status)
 }

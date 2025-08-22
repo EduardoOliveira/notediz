@@ -1,7 +1,9 @@
 package dbkuzu
 
 import (
+	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/EduardoOliveira/notediz/internal/types"
 	"github.com/kuzudb/go-kuzu"
@@ -12,19 +14,21 @@ type Row struct {
 }
 
 func (db *Repo) GetNoteContext(noteID string) ([]any, error) {
-	query := `MATCH (n:Bookmark)
-	RETURN n
+	query := `MATCH (b:Bookmark)
+	WITH b
+	MATCH (t:Text)
+	RETURN b, t
 	`
 
 	prep, err := db.Conn.Prepare(query)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to prepare query: %v", err)
 	}
 	defer prep.Close()
 
 	result, err := db.Conn.Execute(prep, map[string]any{})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to execute query: %v", err)
 	}
 	defer result.Close()
 
@@ -33,28 +37,33 @@ func (db *Repo) GetNoteContext(noteID string) ([]any, error) {
 	for result.HasNext() {
 		tuple, err := result.Next()
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to get next tuple: %v", err)
 		}
 		defer tuple.Close()
 
 		rows, err := tuple.GetAsSlice()
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to get rows as slice: %v", err)
 		}
+		slog.Info("GetNoteContext", "rows", rows)
 		for _, row := range rows {
 			n, ok := row.(kuzu.Node)
 			if !ok {
 				slog.Error("GetNoteContext", "error", "failed to cast node")
 				continue
 			}
+			slog.Info("GetNoteContext", "node", n)
 
 			var note any
-			switch n.Properties["kind"] {
+			switch strings.ToLower(n.Label) {
 			case string(types.NoteKindBookmark):
-				note, err = types.BookmarkFromFlatTuple(n.Properties)
-				if err != nil {
-					return nil, err
-				}
+				bm := types.Bookmark{}
+				bm.FromAny(n.Properties)
+				note = bm
+			case string(types.NoteKindText):
+				txt := types.Text{}
+				txt.FromAny(n.Properties)
+				note = txt
 			default:
 				slog.Info("GetNoteContext", "kind", "no clue")
 				note = row

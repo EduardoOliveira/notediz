@@ -58,8 +58,8 @@ func (r *Repo) initSchema(basePath string) {
 
 	queries := []string{
 		//TODO: explore kuzu uuid type
-		`CREATE NODE TABLE Text(id STRING, kind STRING, content STRING, created_at TIMESTAMP, updated_at TIMESTAMP, PRIMARY KEY (id))`,
-		`CREATE NODE TABLE Bookmark(id STRING, kind STRING, title STRING, url STRING, created_at TIMESTAMP, updated_at TIMESTAMP, PRIMARY KEY (id))`,
+		`CREATE NODE TABLE Text(ID STRING, Kind STRING, Content STRING, CreatedAt TIMESTAMP, UpdatedAt TIMESTAMP, PRIMARY KEY (ID))`,
+		`CREATE NODE TABLE Bookmark(ID STRING, Kind STRING, Title STRING, URL STRING, CreatedAt TIMESTAMP, UpdatedAt TIMESTAMP, PRIMARY KEY (ID))`,
 	}
 
 	for i := revision; i < len(queries); i++ {

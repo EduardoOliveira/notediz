@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"time"
+
+	"github.com/EduardoOliveira/notediz/internal/lib/tools"
 )
 
 type Text struct {
@@ -25,14 +27,28 @@ func (t Text) Validate() error {
 	return err
 }
 
+func (t *Text) CreateFromAny(v map[string]any) error {
+	t.FromAny(v)
+
+	t.ID = tools.UUID()
+	t.CreatedAt = tools.Now()
+	t.UpdatedAt = tools.Now()
+	t.Kind = NoteKindText
+
+	if err := t.Validate(); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (t *Text) FromAny(v map[string]any) {
-	anyToSome(&t.ID, v["id"])
-	anyToSome(&t.Content, v["content"])
+	anyToSome(&t.ID, v["ID"])
+	anyToSome(&t.Content, v["Content"])
 
-	anyToTime(&t.CreatedAt, v["created_at"])
-	anyToTime(&t.UpdatedAt, v["updated_at"])
+	anyToTime(&t.CreatedAt, v["CreatedAt"])
+	anyToTime(&t.UpdatedAt, v["UpdatedAt"])
 
-	if kind, ok := v["kind"].(string); ok {
+	if kind, ok := v["Kind"].(string); ok {
 		t.Kind = NoteKind(kind)
 	}
 }
