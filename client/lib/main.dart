@@ -1,7 +1,9 @@
+import 'package:client/notes/widgets/EditNote.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'notes/models/contextModel.dart';
 import 'notes/widgets/notesList.dart';
+import 'package:go_router/go_router.dart';
 
 void main() {
   runApp(
@@ -11,6 +13,26 @@ void main() {
     ),
   );
 }
+
+/// The route configuration.
+final GoRouter _router = GoRouter(
+  routes: <RouteBase>[
+    GoRoute(
+      path: '/',
+      builder: (BuildContext context, GoRouterState state) {
+        return const NotesList();
+      },
+      routes: <RouteBase>[
+        GoRoute(
+          path: 'details',
+          builder: (BuildContext context, GoRouterState state) {
+            return const EditNote();
+          },
+        ),
+      ],
+    ),
+  ],
+);
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -38,7 +60,7 @@ class MyApp extends StatelessWidget {
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text("Notediz"),
         ),
-        body: NotesList(),
+        body: MaterialApp.router(routerConfig: _router),
         floatingActionButton: FloatingActionButton(
           onPressed: () {},
           tooltip: 'Increment',

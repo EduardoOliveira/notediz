@@ -2,6 +2,7 @@ import 'package:client/notes/domain/models/notes.dart' as notes;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/contextModel.dart';
+import 'package:go_router/go_router.dart';
 
 class NewNoteCard extends StatefulWidget {
   const NewNoteCard({super.key});
@@ -20,7 +21,7 @@ class _NewNoteCardState extends State<NewNoteCard> {
     contextModel = Provider.of<ContextModel>(context, listen: false);
   }
 
-  void _saveNote() {
+  void _saveNote(BuildContext ctx) {
     if (_noteContent.startsWith("http")) {
       final bookmark = notes.Bookmark(
         url: _noteContent,
@@ -38,6 +39,7 @@ class _NewNoteCardState extends State<NewNoteCard> {
         updatedAt: DateTime.now(),
       ),
     );
+    ctx.go('/details');
   }
 
   void _noteChanged(String value) {
@@ -70,7 +72,7 @@ class _NewNoteCardState extends State<NewNoteCard> {
                   ElevatedButton(
                     onPressed: () {
                       // Handle save action
-                      _saveNote();
+                      _saveNote(context);
                     },
                     child: Text('Save'),
                   ),
