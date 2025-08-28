@@ -17,7 +17,9 @@ func main() {
 
 	handler := handler.New(db)
 
-	http.ListenAndServe(":8080", corsMiddleware(handler.HTTPHandler))
+	if err := http.ListenAndServe(":8080", corsMiddleware(handler.HTTPHandler)); err != nil {
+		panic("failed to start server: " + err.Error())
+	}
 }
 
 func corsMiddleware(next http.Handler) http.Handler {
